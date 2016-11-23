@@ -14,7 +14,7 @@ use SecurityLib;
 
 class MagicLogin_AuthService extends BaseApplicationComponent
 {
-    public function createMagicLogin($email)
+    public function createMagicLogin($email, $redirectUrl)
     {
         // Look up user
         $user = craft()->users->getUserByEmail($email);
@@ -44,6 +44,8 @@ class MagicLogin_AuthService extends BaseApplicationComponent
         $record->privateKey = $privateKey;
 
         $record->timestamp = $timestamp;
+
+        $record->redirectUrl = $redirectUrl;
 
         $record->save();
 

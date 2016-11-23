@@ -55,18 +55,24 @@ class MagicLogin_AuthenticationController extends BaseController
         //If all this has been valid, login the user
         craft()->userSession->loginByUserId($authorizationRecord->userId);
 
+        $redirectUrl = $authorizationRecord->redirectUrl;
+
         $authorizationRecord->delete();
 
-        $this->redirect($settings['redirectAfterLogin']);
+        $this->redirect($redirectUrl);
     }
 
     public function actionLogin()
     {
         $this->requirePostRequest();
 
+        $settings = craft()->plugins->getPlugin('magiclogin')->getSettings();
+
         $emailAddress = craft()->request->getPost('email');
 
-        $link = craft()->magicLogin_auth->createMagicLogin($emailAddress);
+        $redirectUrl = craft()->request->getPost('redirect') ?: $settings['redirectAfterLogin'];
+
+        $link = craft()->magicLogin_auth->createMagicLogin($emailAddress, $redirectUrl);
 
         if ($link) {
             $emailSent = craft()->magicLogin_auth->sendEmail($emailAddress, $link);

@@ -22,7 +22,8 @@ class MagicLogin_AuthRecord extends BaseRecord
             'userId' => AttributeType::Number,
             'publicKey' => AttributeType::String,
             'timestamp' => AttributeType::String,
-            'privateKey' => AttributeType::String
+            'privateKey' => AttributeType::String,
+            'redirectUrl' => AttributeType::String
         );
     }
 }
