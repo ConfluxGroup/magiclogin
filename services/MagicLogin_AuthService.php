@@ -49,7 +49,9 @@ class MagicLogin_AuthService extends BaseApplicationComponent
 
         $signature = $this->generateSignature($privateKey, $publicKey, $timestamp);
 
-        $magicLogin = craft()->getSiteUrl()."magiclogin/auth/$publicKey/$timestamp/$signature";
+        $settings = craft()->plugins->getPlugin('magiclogin')->getSettings();
+
+        $magicLogin = craft()->getSiteUrl(). $settings->authUri ."/$publicKey/$timestamp/$signature";
 
         return $magicLogin;
     }
