@@ -44,9 +44,7 @@ class MagicLoginPlugin extends BasePlugin
     public function registerSiteRoutes()
     {
         return array(
-            $this->getSettings()['authUri'] . '/(?P<publicKey>\w+)/(?P<timestamp>\d+)/(?P<signature>\w+)'
-                => array('action' => 'magicLogin/authentication/authenticate'),
-            'magiclogin/login' => array('action' => 'magicLogin/authentication/loginForm')
+            $this->getSettings()['authUri'] . '/(?P<publicKey>\w+)/(?P<timestamp>\d+)/(?P<signature>\w+)' => array('action' => 'magicLogin/authentication/authenticate')
         );
     }
 
