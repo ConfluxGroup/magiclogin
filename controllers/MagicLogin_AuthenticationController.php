@@ -75,7 +75,11 @@ class MagicLogin_AuthenticationController extends BaseController
         $link = craft()->magicLogin_auth->createMagicLogin($emailAddress, $redirectUrl);
 
         if ($link) {
-            $emailSent = craft()->magicLogin_auth->sendEmail($emailAddress, $link);
+
+            // Get the user model for the email address
+            $user = craft()->users->getUserByEmail($emailAddress);
+
+            $emailSent = craft()->magicLogin_auth->sendEmail($emailAddress, $link, $user);
 
             craft()->urlManager->setRouteVariables(array(
                'message' => 'Success! Check your email for your magic link.',
@@ -89,6 +93,8 @@ class MagicLogin_AuthenticationController extends BaseController
         }
     }
 
+    /*
+    Don't need this anymore, since we're not providing a default login form.
     public function actionLoginForm()
     {
         $settings = craft()->plugins->getPlugin('magiclogin')->getSettings();
@@ -115,4 +121,5 @@ class MagicLogin_AuthenticationController extends BaseController
 
         echo $html;
     }
+    */
 }

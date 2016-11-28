@@ -38,7 +38,7 @@ class MagicLoginPlugin extends BasePlugin
 
     public function getDescription()
     {
-        return 'Simple password-less login for Craft CMS.';
+        return 'Simple password-less login for CraftCMS.';
     }
 
     public function registerSiteRoutes()
@@ -53,7 +53,10 @@ class MagicLoginPlugin extends BasePlugin
         return array(
             'linkExpirationTime' => array(AttributeType::Number, 'default' => 5),
             'redirectAfterLogin' => array(AttributeType::String, 'default' => '/admin'),
-            'authUri' => array(AttributeType::String, 'default' => 'magiclogin/auth')
+            'authUri' => array(AttributeType::String, 'default' => 'magiclogin/auth'),
+            'emailSubject' => array(AttributeType::String, 'default' => craft()->getSiteName().' - Magic Login'),
+            'emailTemplatePlain' => array(AttributeType::String, 'default' => 'magiclogin/_email'),
+            'emailTemplateHtml' => array(AttributeType::String, 'default' => ''),
         );
     }
 

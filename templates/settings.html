@@ -23,3 +23,27 @@
 	label: 'URL path for Magic Links (i.e. "magiclogin/auth")',
 	size: 30
 })}}
+
+{{textfield({
+	id: 'emailSubject',
+	name: 'emailSubject',
+	value: settings['emailSubject'],
+	label: 'Subject line for Magic Login email',
+	size: 50
+})}}
+
+{{textfield({
+	id: 'emailTemplatePlain',
+	name: 'emailTemplatePlain',
+	value: settings['emailTemplatePlain'],
+	label: 'Template path for plain text Magic Login Email (i.e. "magiclogin/_email")',
+	size: 30
+})}}
+
+{{textfield({
+	id: 'emailTemplateHtml',
+	name: 'emailTemplateHtml',
+	value: settings['emailTemplateHtml'],
+	label: 'Template path for HTML Magic Login Email (i.e. "magiclogin/_email")',
+	size: 30
+})}}

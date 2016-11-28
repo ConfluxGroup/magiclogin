@@ -76,24 +76,36 @@ class MagicLogin_AuthService extends BaseApplicationComponent
         return $authRecord;
     }
 
-    public function sendEmail($emailAddress, $link)
+    public function sendEmail($emailAddress, $link, $user)
     {
+        // load plugin settings
         $settings = craft()->plugins->getPlugin('magiclogin')->getSettings();
 
-        $email = new EmailModel();
-        
+        // setup an email model and load up the info we have already
+        $email = new EmailModel();   
         $email->toEmail = $emailAddress;
+        $email->subject = $settings->emailSubject;
+
+        // now we're going to fire up the template parser,
+        // passing the link expiration time and the link to the email template
+
+        // first the plaintext
+        $email->body = craft()->templates->render($settings->emailTemplatePlain, array(
+            'linkExpirationTime' => $settings->linkExpirationTime . ' minutes',
+            'link' => $link,
+            'user' => $user
+        ));
+
+        // first the plaintext
+        if( !empty($settings->emailTemplateHtml) )
+        {
+            $email->htmlBody = craft()->templates->render($settings->emailTemplateHtml, array(
+                'linkExpirationTime' => $settings->linkExpirationTime . ' minutes',
+                'link' => $link,
+                'user' => $user
+            ));
+        }
         
-        $email->subject = craft()->getSiteName().' - Magic Login';
-        
-        $email->body    =
-        "Here is your Magic Login! 
-
-It can only be used once and will expire in $settings->linkExpirationTime minutes.
-
-$link
-
-Powered by [MagicLogin](https://github.com/aberkie/magiclogin)";
 
         try {
             $success = craft()->email->sendEmail($email);
