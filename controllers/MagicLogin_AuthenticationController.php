@@ -27,11 +27,13 @@ class MagicLogin_AuthenticationController extends BaseController
 
         $signature = $routeParams['variables']['signature'];
 
+        $authenticationFailed = false;
+
         //Check for record with public key
         $authorizationRecord = craft()->magicLogin_auth->getAuthorization($publicKey);
 
         if ($authorizationRecord === null) {
-            $this->redirect('/magiclogin/login', true);
+            $authenticationFailed = true;
         }
 
         // Check if the signatures match
@@ -42,14 +44,21 @@ class MagicLogin_AuthenticationController extends BaseController
         );
 
         if ($signature != $generatedSignature) {
-            $this->redirect('/magiclogin/login', true);
+            $authenticationFailed = true;
         }
 
         // Check if timestamp is within bounds
         $timelimit = $authorizationRecord->timestamp + ($settings['linkExpirationTime'] * 60);
 
         if (time() > $timelimit) {
-            $this->redirect('/magiclogin/login', true);
+            $authenticationFailed = true;
+        }
+
+        // Check if one of our triggers from above has caused authentication to fail
+        // and redirect to the path in the settings, so we can bail out of the process
+        if($authenticationFailed)
+        {
+            $this->redirect($settings->linkErrorPath, true);
         }
 
         //If all this has been valid, login the user
@@ -92,34 +101,4 @@ class MagicLogin_AuthenticationController extends BaseController
             ));
         }
     }
-
-    /*
-    Don't need this anymore, since we're not providing a default login form.
-    public function actionLoginForm()
-    {
-        $settings = craft()->plugins->getPlugin('magiclogin')->getSettings();
-        
-        $oldPath = craft()->path->getTemplatesPath();
-        
-        $newPath = craft()->path->getPluginsPath().'magiclogin/templates';
-        
-        craft()->path->setTemplatesPath($newPath);
-
-        $params = craft()->urlManager->getRouteParams();
-        
-        $message = (isset($params['variables']['message']) ? $params['variables']['message']: '');
-
-        $status = (isset($params['variables']['status']) ? $params['variables']['status']: '');
-
-        $html = craft()->templates->render('login', array(
-            'settings' => $settings,
-            'message' => $message,
-            'status' => $status
-        ));
-        
-        craft()->path->setTemplatesPath($oldPath);
-
-        echo $html;
-    }
-    */
 }

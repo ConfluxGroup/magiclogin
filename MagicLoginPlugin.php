@@ -57,6 +57,7 @@ class MagicLoginPlugin extends BasePlugin
             'emailSubject' => array(AttributeType::String, 'default' => craft()->getSiteName().' - Magic Login'),
             'emailTemplatePlain' => array(AttributeType::String, 'default' => 'magiclogin/_email'),
             'emailTemplateHtml' => array(AttributeType::String, 'default' => ''),
+            'linkErrorPath' => array(AttributeType::String, 'default' => '')
         );
     }
 
