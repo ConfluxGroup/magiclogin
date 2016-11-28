@@ -23,30 +23,26 @@ class MagicLogin_AuthService extends BaseApplicationComponent
             return false;
         }
 
+        // For security purposes, we need to expire old login links for this user
+        $this->expireUserLinks($user);
+
+        // And so the database doesn't get flooded, we'll garbagecollect old login links as well
+        $this->garbageCollectLinks();
+
         // Create random tokens
         $factory = new RandomLib\Factory();
-        
         $generator = $factory->getHighStrengthGenerator();
-
         $publicKey = $generator->generateString(64, 'abcdefghjkmnpqrstuvwxyz23456789');
-
         $privateKey = $generator->generateString(128, 'abcdefghjkmnpqrstuvwxyz23456789');
-
         $timestamp = time();
 
         // Populate Record
         $record = new MagicLogin_AuthRecord();
-
         $record->userId = $user->id;
-
         $record->publicKey = $publicKey;
-
         $record->privateKey = $privateKey;
-
         $record->timestamp = $timestamp;
-
         $record->redirectUrl = $redirectUrl;
-
         $record->save();
 
         $signature = $this->generateSignature($privateKey, $publicKey, $timestamp);
@@ -114,5 +110,40 @@ class MagicLogin_AuthService extends BaseApplicationComponent
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function expireUserLinks($user)
+    {
+        // Delete all existing authorization records with this user id
+        craft()->db->createCommand()
+            ->delete(
+                'magiclogin_authorizations',
+                'userId=:userId', 
+                array(':userId' => $user->id)
+            );
+
+        return true;    
+
+    }
+
+    public function garbageCollectLinks()
+    {
+        // load plugin settings
+        $settings = craft()->plugins->getPlugin('magiclogin')->getSettings();
+
+        // using the expiration time specified in the settings,
+        // calculate the timestamp which we should delete authorizations
+        // that were created before
+        $deleteBefore =  time() - ($settings->linkExpirationTime * 60);
+
+        craft()->db->createCommand()
+            ->delete(
+                'magiclogin_authorizations',
+                'timestamp<:deleteBefore', 
+                array(':deleteBefore' => $deleteBefore)
+            );
+
+        return true;    
+
     }
 }
