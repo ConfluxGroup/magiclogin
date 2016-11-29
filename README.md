@@ -15,11 +15,12 @@ In the template where you want to create your login form, use code like this
 <p>Enter your email address below to receive a Magic Login link.</p>
 
 <p>The link will expire after {{settings.linkExpirationTime}} minutes and can only be used once.</p>
-
-{% if status == 'success' %}
-	<p class="{{status}}">Check your email for your login link.</p>
-{% elseif status == 'fail' %}
-	<p class="{{status}}">Try again. Something went wrong.</p>
+{% if status is defined %}
+	{% if status == 'success' %}
+		<p class="{{status}}">Check your email for your login link.</p>
+	{% elseif status == 'fail' %}
+		<p class="{{status}}">Try again. Something went wrong.</p>
+	{% endif %}
 {% endif %}
 
 <form method="post" action="" accept-charset="UTF-8">
