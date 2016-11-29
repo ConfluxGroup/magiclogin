@@ -31,7 +31,7 @@ class MagicLogin_AuthService extends BaseApplicationComponent
 
         // Create random tokens
         $factory = new RandomLib\Factory();
-        $generator = $factory->getHighStrengthGenerator();
+        $generator = $factory->getMediumStrengthGenerator();
         $publicKey = $generator->generateString(64, 'abcdefghjkmnpqrstuvwxyz23456789');
         $privateKey = $generator->generateString(128, 'abcdefghjkmnpqrstuvwxyz23456789');
         $timestamp = time();
